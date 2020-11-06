@@ -22,8 +22,8 @@ def test_noop():
 
 def test_bad_url(test_settings):
     s = wandb.Settings(mode="disabled", base_url="localhost:9000")
-    s._apply_settings(test_settings)
-    run = wandb.init(settings=s)
+    test_settings._apply_settings(s)
+    run = wandb.init(settings=test_settings)
     run.log({"acc": 0.9})
     wandb.join()
 
