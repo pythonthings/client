@@ -284,6 +284,7 @@ class TorchHistory(object):
         def _callback(grad, log_track):
             print("_callback()")
             if not log_track_update(log_track):
+                print("failed")
                 return
             self.log_tensor_stats(grad.data, name)
 
