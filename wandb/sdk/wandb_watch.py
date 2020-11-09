@@ -29,7 +29,7 @@ def watch(models, criterion=None, log="gradients", log_freq=1000, idx=None):
     :return: (wandb.Graph) The graph object that will populate after the first backward pass
     """
     global _global_watch_idx
-
+    wandb.termlog("watach()")
     logger.info("Watching")
     # TODO: temporary override for huggingface remove after: https://github.com/huggingface/transformers/pull/4220
     if os.getenv("WANDB_WATCH") == "false":
