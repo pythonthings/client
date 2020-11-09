@@ -133,7 +133,7 @@ class TorchHistory(object):
             module._wandb_hook_names.append("parameters/" + prefix)
 
         if log_gradients:
-            wanbd.termlog("log_gradients ok")
+            wandb.termlog("log_gradients ok")
             for name, parameter in module.named_parameters():
                 wandb.termlog(str((name, parameter)))
                 if parameter.requires_grad:
