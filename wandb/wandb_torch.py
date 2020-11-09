@@ -141,7 +141,7 @@ class TorchHistory(object):
                     )
 
     def log_tensor_stats(self, tensor, name):
-        wandb.termlog(str(("log_tensor_stats", name))
+        wandb.termlog(str(("log_tensor_stats", name)))
         """Add distribution statistics on a tensor's elements to the current History entry
         """
         # TODO Handle the case of duplicate names.
