@@ -110,6 +110,8 @@ class TorchHistory(object):
 
         if log_parameters:
 
+            wanbd.termlog("log_parameters ok")
+
             def parameter_log_hook(module, input_, output, log_track):
                 if not log_track_update(log_track):
                     return
@@ -131,8 +133,11 @@ class TorchHistory(object):
             module._wandb_hook_names.append("parameters/" + prefix)
 
         if log_gradients:
+            wanbd.termlog("log_gradients ok")
             for name, parameter in module.named_parameters():
+                wandb.termlog(str((name, parameter)))
                 if parameter.requires_grad:
+                    wandb.termlog("Requires grad: " + str(name))
                     log_track_grad = log_track_init(log_freq)
                     module._wandb_hook_names.append("gradients/" + prefix + name)
                     self._hook_variable_gradient_stats(
