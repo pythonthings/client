@@ -286,6 +286,7 @@ class TorchHistory(object):
             if not log_track_update(log_track):
                 print("failed")
                 return
+            print("not failed")
             self.log_tensor_stats(grad.data, name)
 
         handle = var.register_hook(lambda grad: _callback(grad, log_track))
