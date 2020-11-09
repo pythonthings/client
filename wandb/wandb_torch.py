@@ -282,13 +282,13 @@ class TorchHistory(object):
             raise ValueError('A hook has already been set under name "{}"'.format(name))
 
         def _callback(grad, log_track):
+            print("_callback()")
             if not log_track_update(log_track):
                 return
             self.log_tensor_stats(grad.data, name)
 
         handle = var.register_hook(lambda grad: _callback(grad, log_track))
         self._hook_handles[name] = handle
-        wandb.termlog("_hook_variable_gradient_stats - Done")
         return handle
 
     def unhook_all(self):
