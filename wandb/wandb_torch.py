@@ -110,7 +110,7 @@ class TorchHistory(object):
 
         if log_parameters:
 
-            wanbd.termlog("log_parameters ok")
+            wandb.termlog("log_parameters ok")
 
             def parameter_log_hook(module, input_, output, log_track):
                 if not log_track_update(log_track):
