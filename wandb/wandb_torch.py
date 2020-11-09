@@ -97,6 +97,9 @@ class TorchHistory(object):
         log_gradients - log gradients after a backward pass
         log_freq - log gradients/parameters every N batches
         """
+
+        wandb.termlog("add_log_hooks_to_pytorch_module()")
+
         if name is not None:
             prefix = prefix + name
 
