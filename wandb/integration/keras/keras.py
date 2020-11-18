@@ -333,6 +333,7 @@ class WandbCallback(keras.callbacks.Callback):
             self.best = previous_best
 
     def _get_training_data_batch_size(self):
+        return 32
         for inp in self.model.inputs:
             if inp.shape[0] is not None:
                 self._training_data_batch_size = inp.shape[0]
