@@ -381,7 +381,7 @@ class WandbCallback(keras.callbacks.Callback):
         if len(self.model.outputs) == 1:
             Y = [Y]
         idx = 0
-        batch_size = len(X[0])#self._training_data_batch_size
+        batch_size = self._training_data_batch_size
         while idx < len(X[0]):
             x_slice = [x[idx : idx + batch_size] for x in X]
             y_slice = [y[idx : idx + batch_size] for y in Y]
@@ -708,14 +708,17 @@ class WandbCallback(keras.callbacks.Callback):
         weights = self.model.trainable_weights
         # grads = [np.zeros(tuple(w.shape)) for w in weights]
 
-        loss = None
+        # loss = None
+        # with tf.GradientTape() as tape:
+        # for x, y in self._training_data_generator():
+        #         batch_loss = tf.reduce_sum(self._loss_model(x + y), 0)
+        #         if loss is None:
+        #             loss = batch_loss
+        #         else:
+        #             loss += batch_loss
+        x, y = self.training_data
         with tf.GradientTape() as tape:
-            for x, y in self._training_data_generator():
-                batch_loss = tf.reduce_sum(self._loss_model(x + y), 0)
-                if loss is None:
-                    loss = batch_loss
-                else:
-                    loss += batch_loss
+            loss = tf.reduce_sum(self._loss_model([x, y))
         grads = tape.gradient(loss, weights)
 
         # for x, y in self._training_data_generator():
