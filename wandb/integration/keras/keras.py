@@ -305,7 +305,7 @@ class WandbCallback(keras.callbacks.Callback):
                 )
             if len(self.training_data) != 2:
                 raise ValueError("training data must be a tuple of length two")
-            self._get_grads = tf.function(self._get_grads)
+            # self._get_grads = tf.function(self._get_grads)
 
         # From Keras
         if mode not in ["auto", "min", "max"]:
