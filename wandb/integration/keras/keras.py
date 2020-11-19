@@ -716,7 +716,7 @@ class WandbCallback(keras.callbacks.Callback):
         for x, y in self._training_data_generator():
             batch_grads = self._get_grads(x, y)
             for g, bg in zip(grads, batch_grads):
-                g += bg.numpy()
+                pass#g += bg.numpy()
         metrics = {}
         for (weight, grad) in zip(weights, grads):
             metrics[
