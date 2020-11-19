@@ -381,7 +381,7 @@ class WandbCallback(keras.callbacks.Callback):
         if len(self.model.outputs) == 1:
             Y = [Y]
         idx = 0
-        batch_size = self._training_data_batch_size
+        batch_size = len(X[0])#self._training_data_batch_size
         while idx < len(X[0]):
             x_slice = [x[idx : idx + batch_size] for x in X]
             y_slice = [y[idx : idx + batch_size] for y in Y]
