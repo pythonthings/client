@@ -334,7 +334,6 @@ class WandbCallback(keras.callbacks.Callback):
             self.best = previous_best
 
     def _get_training_data_batch_size(self):
-
         for inp in self.model.inputs:
             if inp.shape[0] is not None:
                 self._training_data_batch_size = inp.shape[0]
@@ -719,7 +718,7 @@ class WandbCallback(keras.callbacks.Callback):
         for (weight, grad) in zip(weights, grads):
             metrics[
                 "gradients/" + weight.name.split(":")[0] + ".gradient"
-            ] = wandb.Histogram(grad.numpy())
+            ] = wandb.Histogram(grad)
         return metrics
 
     def _log_dataframe(self):
