@@ -707,7 +707,7 @@ class WandbCallback(keras.callbacks.Callback):
     def _get_grads(self, x, y):
         with tf.GradientTape() as tape:
             loss = tf.reduce_sum(self._loss_model([x, y]))
-        grads = tape.gradient(loss, model.trainable_weights)
+        grads = tape.gradient(loss, self.model.trainable_weights)
         return tuple(grads)
 
     def _log_gradients(self):
