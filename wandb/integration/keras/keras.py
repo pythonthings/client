@@ -411,6 +411,14 @@ class WandbCallback(keras.callbacks.Callback):
         if self.log_gradients:
             self._build_loss_model()
             self._get_training_data_batch_size()
+            if len(model.inputs) == 1:
+                self._training_data_x = [tf.constant(self.training_data[0])]
+            else:
+                self._training_data_x = [tf.constant(x) for x in self.training_data[0]]
+            if len(model.outputs) == 1:
+                self._training_data_y = [tf.constant(self.training_data[1])]
+            else:
+                self._training_data_y = [tf.constant(y) for y in self.training_data[1]]
 
     def on_epoch_end(self, epoch, logs={}):
         if self.log_weights:
@@ -704,9 +712,10 @@ class WandbCallback(keras.callbacks.Callback):
                 )
         return metrics
 
-    def _get_grads(self, x, y):
+    def _get_grads():
+        x, y = self._training_data_x, self._training_data_y
         with tf.GradientTape() as tape:
-            loss = tf.reduce_sum(self._loss_model([x, y]))
+            loss = tf.reduce_sum(self._loss_model(x + y))
         grads = tape.gradient(loss, self.model.trainable_weights)
         return tuple(grads)
 
