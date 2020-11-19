@@ -305,6 +305,7 @@ class WandbCallback(keras.callbacks.Callback):
                 )
             if len(self.training_data) != 2:
                 raise ValueError("training data must be a tuple of length two")
+            self._get_grads = tf.function(self._get_grads)
 
         # From Keras
         if mode not in ["auto", "min", "max"]:
@@ -703,17 +704,19 @@ class WandbCallback(keras.callbacks.Callback):
                 )
         return metrics
 
-    def _log_gradients(self):
-        weights = self.model.trainable_weights
-        grads = [np.zeros(tuple(w.shape)) for w in weights]
+    def _get_grads(x, y):
+        with tf.GradientTape() as tape:
+            loss = tf.reduce_sum(self._loss_model([x, y]))
+        grads = tape.gradient(loss, model.trainable_weights)
+        return tuple(grads)
 
+    def _log_gradients(self):
+        weights = model.trainable_weights
+        grads = [np.zeros(tuple(w.shape)) for w in weights]
         for x, y in self._training_data_generator():
-            with tf.GradientTape() as tape:
-                loss = tf.reduce_sum(self._loss_model(x + y))
-            batch_grads = tape.gradient(loss, weights)
+            batch_grads = self._get_grads(x, y)
             for g, bg in zip(grads, batch_grads):
                 g += bg.numpy()
-    
         metrics = {}
         for (weight, grad) in zip(weights, grads):
             metrics[
