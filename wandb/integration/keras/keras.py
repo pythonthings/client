@@ -711,7 +711,7 @@ class WandbCallback(keras.callbacks.Callback):
         return tuple(grads)
 
     def _log_gradients(self):
-        weights = model.trainable_weights
+        weights = self.model.trainable_weights
         grads = [np.zeros(tuple(w.shape)) for w in weights]
         for x, y in self._training_data_generator():
             batch_grads = self._get_grads(x, y)
