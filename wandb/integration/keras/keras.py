@@ -334,6 +334,7 @@ class WandbCallback(keras.callbacks.Callback):
             self.best = previous_best
 
     def _get_training_data_batch_size(self):
+
         for inp in self.model.inputs:
             if inp.shape[0] is not None:
                 self._training_data_batch_size = inp.shape[0]
@@ -349,8 +350,7 @@ class WandbCallback(keras.callbacks.Callback):
         y_batch_num_bytes = sum([y.itemsize * y.size for y in y_batch])
         batch_num_bytes = x_batch_num_bytes + y_batch_num_bytes
         MAX_KB = 1
-        self._training_data_batch_size = max(1, int(MAX_KB * 1024 / batch_num_bytes))
-        wandb.termlog("Batch size: " + str(self._training_data_batch_size))
+        self._training_data_batch_size = 32#max(1, int(MAX_KB * 1024 / batch_num_bytes))
 
     def _build_loss_model(self):
         inputs = self.model.inputs
