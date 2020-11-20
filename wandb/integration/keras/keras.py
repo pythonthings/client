@@ -186,7 +186,7 @@ class WandbCallback(keras.callbacks.Callback):
 
     WandbCallback can optionally save training and validation data for wandb to visualize.
 
-    Args:
+    Arguments:
         monitor (str): name of metric to monitor.  Defaults to val_loss.
         mode (str): one of {"auto", "min", "max"}.
             "min" - save model when monitor is minimized
@@ -297,7 +297,7 @@ class WandbCallback(keras.callbacks.Callback):
         self._prediction_batch_size = None
 
         if self.log_gradients:
-            if int(tf.__version__.split('.')[0]) <2:
+            if int(tf.__version__.split(".")[0]) < 2:
                 raise Exception("Gradient logging requires tensorflow 2.0 or higher.")
             if self.training_data is None:
                 raise ValueError(
@@ -305,7 +305,7 @@ class WandbCallback(keras.callbacks.Callback):
                 )
             if len(self.training_data) != 2:
                 raise ValueError("training data must be a tuple of length two")
-            # self._get_grads = tf.function(self._get_grads)
+            self._get_grads = tf.function(self._get_grads)
 
         # From Keras
         if mode not in ["auto", "min", "max"]:
@@ -712,25 +712,19 @@ class WandbCallback(keras.callbacks.Callback):
                 )
         return metrics
 
-    def _get_grads(self):
-        x, y = self._training_data_x, self._training_data_y
+    def _get_grads(self, x, y):
         with tf.GradientTape() as tape:
-            loss = tf.reduce_sum(self._loss_model(x + y))
+            loss = tf.reduce_sum(self._loss_model([x, y]))
         grads = tape.gradient(loss, self.model.trainable_weights)
         return tuple(grads)
 
     def _log_gradients(self):
         weights = self.model.trainable_weights
-        #grads = [np.zeros(tuple(w.shape)) for w in weights]
-        total_loss = None
-        with tf.GradientTape() as tape:
-            for x, y in self._training_data_generator():
-                batch_loss = tf.reduce_sum(self._loss_model(x + y))
-                if total_loss is None:
-                    total_loss = batch_loss
-                else:
-                    total_loss += batch_loss
-        grads = [g.numpy() for g in tape.gradient(total_loss, weights)]
+        grads = [np.zeros(tuple(w.shape)) for w in weights]
+        for x, y in self._training_data_generator():
+            batch_grads = self._get_grads(x, y)
+            for g, bg in zip(grads, batch_grads):
+                g += bg.numpy()
         metrics = {}
         for (weight, grad) in zip(weights, grads):
             metrics[
@@ -786,6 +780,8 @@ class WandbCallback(keras.callbacks.Callback):
             return None
 
     def _save_model(self, epoch):
+        if wandb.run.disabled:
+            return
         if self.verbose > 0:
             print(
                 "Epoch %05d: %s improved from %0.5f to %0.5f,"
